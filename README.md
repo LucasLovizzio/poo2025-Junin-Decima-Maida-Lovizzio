@@ -1,2 +1,6 @@
-# poo2025-Junin-1
-POO 2025 - Junin - 1
+# poo2025-Junin
+POO 2025 - Junin
+
+**Alumnos:**
+- Melina Maida.
+- Lucas Lovizzio.
