@@ -1,4 +1,4 @@
-package com.example.demo;
+package ar.edu.unnoba.poo2025.torneos.model;
 
 public abstract class Usuario {
     private String email;

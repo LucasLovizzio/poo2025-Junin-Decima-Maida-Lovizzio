@@ -1,4 +1,4 @@
-package com.example.demo;
+package ar.edu.unnoba.poo2025.torneos.model;
 
 import java.util.Date;
 import java.util.Set;
