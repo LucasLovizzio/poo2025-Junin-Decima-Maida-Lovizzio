@@ -1,21 +1,51 @@
 package ar.edu.unnoba.poo2025.torneos.model;
 
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity @Table(name = "competencias")
 public class Competencia {
+
+    @Id @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 255)
     private String nombre;
-    private Double precioBase;
+
+    @Column(name = "precio_base", nullable = false, precision = 10, scale = 2)
+    private BigDecimal precioBase;
+
+    @Column(nullable = false)
     private Integer cupo;
 
-    private Inscripcion inscripcion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "torneo_id", nullable = false)
+    private Torneo torneo;
 
-    public Competencia(String nombre, Double precioBase, Integer cupo, Inscripcion inscripcion) {
+    @OneToMany(mappedBy = "competencia", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Inscripcion> inscripciones = new HashSet<>();
+
+    public Competencia() {}
+
+    public Competencia(Long id, String nombre, BigDecimal precioBase, Integer cupo, Torneo torneo, Set<Inscripcion> inscripciones) {
+        this.id = id;
         this.nombre = nombre;
         this.precioBase = precioBase;
         this.cupo = cupo;
-        this.inscripcion = inscripcion;
+        this.torneo = torneo;
+        this.inscripciones = inscripciones;
     }
 
-    public Inscripcion inscribir(Participante p) {
-        return inscripcion;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -26,11 +56,11 @@ public class Competencia {
         this.nombre = nombre;
     }
 
-    public Double getPrecioBase() {
+    public BigDecimal getPrecioBase() {
         return precioBase;
     }
 
-    public void setPrecioBase(Double precioBase) {
+    public void setPrecioBase(BigDecimal precioBase) {
         this.precioBase = precioBase;
     }
 
@@ -42,11 +72,19 @@ public class Competencia {
         this.cupo = cupo;
     }
 
-    public Inscripcion getInscripcion() {
-        return inscripcion;
+    public Torneo getTorneo() {
+        return torneo;
     }
 
-    public void setInscripcion(Inscripcion inscripcion) {
-        this.inscripcion = inscripcion;
+    public void setTorneo(Torneo torneo) {
+        this.torneo = torneo;
+    }
+
+    public Set<Inscripcion> getInscripciones() {
+        return inscripciones;
+    }
+
+    public void setInscripciones(Set<Inscripcion> inscripciones) {
+        this.inscripciones = inscripciones;
     }
 }
