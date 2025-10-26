@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity @Table(name = "participantes")
+@DiscriminatorValue("PARTICIPANTE")
 @PrimaryKeyJoinColumn(name = "usuario_id")
 public class Participante extends Usuario {
 

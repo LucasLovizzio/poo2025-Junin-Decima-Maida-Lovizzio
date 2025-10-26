@@ -1,8 +1,14 @@
 package ar.edu.unnoba.poo2025.torneos.model;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.List;
 
-public class Administrador {
+@Entity @Table(name = "administradores")
+@DiscriminatorValue("ADMIN")
+public class Administrador extends Usuario {
     public Torneo crearTorneo() {
         return null;
     }

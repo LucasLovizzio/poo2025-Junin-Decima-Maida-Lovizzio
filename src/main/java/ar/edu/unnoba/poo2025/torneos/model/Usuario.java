@@ -9,6 +9,11 @@ import java.util.Set;
         name = "usuarios",
         uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(
+        name = "tipo_usuario_rol",
+        discriminatorType = DiscriminatorType.STRING,
+        length = 13
+)
 public abstract class Usuario {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,19 +25,15 @@ public abstract class Usuario {
     @Column(nullable = false, length = 255)
     private String contrasena;
 
-    @Column(name = "tipo_usuario_rol", nullable = false, length = 13)
-    private String tipoUsuarioRol;
-
     @OneToMany(mappedBy = "admin")
     private Set<Torneo> torneos = new HashSet<Torneo>();
 
     public Usuario() {}
 
-    public Usuario(Long id, String email, String contrasena, String tipoUsuarioRol, Set<Torneo> torneos) {
+    public Usuario(Long id, String email, String contrasena, Set<Torneo> torneos) {
         this.id = id;
         this.email = email;
         this.contrasena = contrasena;
-        this.tipoUsuarioRol = tipoUsuarioRol;
         this.torneos = torneos;
     }
 
@@ -62,14 +63,6 @@ public abstract class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-    }
-
-    public String getTipoUsuarioRol() {
-        return tipoUsuarioRol;
-    }
-
-    public void setTipoUsuarioRol(String tipoUsuarioRol) {
-        this.tipoUsuarioRol = tipoUsuarioRol;
     }
 
     public Set<Torneo> getTorneos() {
