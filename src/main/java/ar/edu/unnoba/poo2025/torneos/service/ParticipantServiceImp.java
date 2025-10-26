@@ -23,19 +23,17 @@ public class ParticipantServiceImp implements ParticipantService {
     @Override
     public Participante create(Participante p) throws ParticipantAlreadyExistsException {
         // verificar si el participante ya existe, si existe lanzar una excepción, si no existe guardarlo.
-        if(participantRepository.findByEmail(p.getEmail()) != null){
-            throw new ParticipantAlreadyExistsException("Participant with email " + p.getEmail() + " already exists.");
-        }
-        p.setPassword(passwordEncoder.encode(p.getPassword()));
+        participantRepository.findByEmail(p.getEmail())
+                .orElseThrow(() -> new ParticipantAlreadyExistsException("Participant with email " + p.getEmail() + " already exists."));
+        p.setContrasena(passwordEncoder.encode(p.getContrasena()));
         return participantRepository.save(p);
     }
 
     @Override
     public void delete(Participante p) throws ParticipantNotFoundException {
         // verificar si el participante existe, si no existe lanzar una excepción, si existe eliminarlo.
-        if(participantRepository.findByEmail(p.getEmail()) == null){
-            throw new ParticipantNotFoundException("Participant with email " + p.getEmail() + " does not exist.");
-        }
+        participantRepository.findByEmail(p.getEmail())
+                .orElseThrow(() -> new ParticipantNotFoundException("Participant with email " + p.getEmail() + " does not exist."));
         participantRepository.delete(p);
     }
 
@@ -44,14 +42,13 @@ public class ParticipantServiceImp implements ParticipantService {
     @Override
     public Participante update(Participante p) throws ParticipantNotFoundException {
         // verificar si el participante existe, si no existe lanzar una excepción
-        Participante existingParticipant = participantRepository.findByEmail(p.getEmail());
-        if(existingParticipant == null){
-            throw new ParticipantNotFoundException("Participant with email " + p.getEmail() + " does not exist.");
-        }
+        Participante existingParticipant = participantRepository.findByEmail(p.getEmail())
+                .orElseThrow(() -> new ParticipantNotFoundException("Participant with email " + p.getEmail() + " does not exist."));
+
         // actualizar los campos del participante existente con los del participante p
         existingParticipant.setNombre(p.getNombre());
         existingParticipant.setApellido(p.getApellido());
-        existingParticipant.setPassword(passwordEncoder.encode(p.getPassword()));
+        existingParticipant.setContrasena(passwordEncoder.encode(p.getContrasena()));
         return participantRepository.save(existingParticipant);
     }
 }
