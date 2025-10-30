@@ -6,35 +6,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity @Table(
-        name = "usuarios",
+        name = "users",
         uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(
-        name = "tipo_usuario_rol",
+        name = "user_type",
         discriminatorType = DiscriminatorType.STRING,
-        length = 13
+        length = 11
 )
-public abstract class Usuario {
+public abstract class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
     @Column(nullable = false, length = 255)
-    private String contrasena;
+    private String password;
 
     @OneToMany(mappedBy = "admin")
-    private Set<Torneo> torneos = new HashSet<Torneo>();
+    private Set<Tournament> tournaments = new HashSet<>();
 
-    public Usuario() {}
+    protected User() {}
 
-    public Usuario(Long id, String email, String contrasena, Set<Torneo> torneos) {
-        this.id = id;
+    protected User(String email, String password) {
         this.email = email;
-        this.contrasena = contrasena;
-        this.torneos = torneos;
+        this.password = password;
     }
 
     public boolean autenticar() {
@@ -57,19 +57,11 @@ public abstract class Usuario {
         this.email = email;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
-
-    public Set<Torneo> getTorneos() {
-        return torneos;
-    }
-
-    public void setTorneos(Set<Torneo> torneos) {
-        this.torneos = torneos;
+    public void setPassword(String contrasena) {
+        this.password = contrasena;
     }
 }

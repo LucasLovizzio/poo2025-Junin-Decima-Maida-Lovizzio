@@ -4,15 +4,6 @@ public class CreateParticipantRequestDTO {
         private String email;
         private String password;
 
-        public CreateParticipantRequestDTO() {
-        }
-        //esta vacio porque es requerido por frameworks como Spring
-
-        public CreateParticipantRequestDTO(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
-
         public String getEmail() {
             return email;
         }
