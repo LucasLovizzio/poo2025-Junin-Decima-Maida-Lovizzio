@@ -37,22 +37,6 @@ public class Participant extends User {
         this.inscriptions = inscriptions;
     }
 
-    public String getNombre() {
-        return name;
-    }
-
-    public void setNombre(String nombre) {
-        this.name = name;
-    }
-
-    public String getApellido() {
-        return lastName;
-    }
-
-    public void setApellido(String apellido) {
-        this.lastName = apellido;
-    }
-
     public String getName() {
         return name;
     }
