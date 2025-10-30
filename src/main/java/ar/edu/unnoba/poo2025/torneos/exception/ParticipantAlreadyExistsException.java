@@ -1,10 +1,11 @@
 package ar.edu.unnoba.poo2025.torneos.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 public class ParticipantAlreadyExistsException extends RuntimeException {
 
-    private final HttpStatusCode code = HttpStatusCode.valueOf(409);
+    private static final HttpStatusCode code = HttpStatus.CONFLICT;
 
     public ParticipantAlreadyExistsException() {
         super();

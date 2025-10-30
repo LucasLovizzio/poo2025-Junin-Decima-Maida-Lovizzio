@@ -1,10 +1,11 @@
 package ar.edu.unnoba.poo2025.torneos.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 public class ParticipantNotFoundException extends RuntimeException {
 
-    private final HttpStatusCode code = HttpStatusCode.valueOf(404);
+    private static final HttpStatusCode code = HttpStatus.NOT_FOUND;
 
     public ParticipantNotFoundException() {
         super();
