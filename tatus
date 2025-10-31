@@ -1,0 +1,23 @@
+[33m7b7b005[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m fix congruencia
+[33m4f4c582[m arregla un error con el encoding de caracteres especiales
+[33mdbaf7e7[m crea ExceptionResponseDTO y modifica el GlobalExceptionHandler para responder exceptions con un response body.
+[33m3c4c7d1[m pasa el codigo de algunas clases a ingles para mantener la congruencia en el codigo
+[33m37fca0a[m rest api y dto
+[33md9476ba[m implementa roles para participante y administrador
+[33mb36c6b7[m implementa interface de repositorio
+[33mcd3a055[m mapea atributos y relaciones
+[33mcac2127[m agrega ParticipantService y su implementación.
+[33m84997f6[m agrega la clase 'PasswordEncoder'
+[33m87fdbbd[m modifica el 'application.properties' para incluir la password de la db y agrega configuraciones para testear la db.
+[33m3a2b703[m agrega las dependencias de encriptación y mapeo.
+[33m96aa122[m Cambio de nombre y ubicacion de la SpringBootAppliation.
+[33mf2aba02[m agrega manejo global de excepciones y custom exceptions
+[33m6703d54[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge branch 'main' into develop
+[33mc5066dd[m cambia los nombres de los packages
+[33m9e31173[m implementa clases
+[33m20884de[m Update README.md
+[33m22ff83a[m agrego el nombre de los alumnos al readme
+[33ma01fa8a[m Merge pull request #1 from LucasLovizzio/develop
+[33m61cf515[m agrego db para solucionar el problema de JPA.
+[33m80795db[m first commit
+[33m6d11c67[m Initial commit

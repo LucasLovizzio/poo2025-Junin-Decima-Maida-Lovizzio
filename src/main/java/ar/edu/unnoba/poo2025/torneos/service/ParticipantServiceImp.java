@@ -30,6 +30,7 @@ public class ParticipantServiceImp implements ParticipantService {
 
         p.setPassword(passwordEncoder.encode(p.getPassword()));
         return participantRepository.save(p);
+
     }
 
     @Override
@@ -49,8 +50,8 @@ public class ParticipantServiceImp implements ParticipantService {
                 .orElseThrow(() -> new ParticipantNotFoundException("Participant with email " + p.getEmail() + " does not exist."));
 
         // actualizar los campos del participante existente con los del participante p
-        existingParticipant.setNombre(p.getNombre());
-        existingParticipant.setApellido(p.getApellido());
+        existingParticipant.setName(p.getName());
+        existingParticipant.setLastName(p.getLastName());
         existingParticipant.setPassword(passwordEncoder.encode(p.getPassword()));
         return participantRepository.save(existingParticipant);
     }
