@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Entity @Table(name = "torneos")
+@Entity
+@Table(name = "tournaments")
 public class Tournament {
 
     @Id
@@ -19,10 +20,10 @@ public class Tournament {
     @Lob @Column(nullable = false)
     private String description;
 
-    @Column(name = "fecha_inicio", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "fecha_fin", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime endDate;
 
     @Column(nullable = false)
