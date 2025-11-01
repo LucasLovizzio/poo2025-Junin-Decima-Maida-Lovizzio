@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/participants")
-public class ParticipantResource {
 
+public class ParticipantResource {
     private ParticipantService participantService;
     private ModelMapper modelMapper;
 
@@ -38,5 +38,6 @@ public class ParticipantResource {
         // si esta bien retorna 201
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
+
 }
 
