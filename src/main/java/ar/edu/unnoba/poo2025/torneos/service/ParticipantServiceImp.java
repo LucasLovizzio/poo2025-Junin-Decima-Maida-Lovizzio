@@ -55,4 +55,10 @@ public class ParticipantServiceImp implements ParticipantService {
         existingParticipant.setPassword(passwordEncoder.encode(p.getPassword()));
         return participantRepository.save(existingParticipant);
     }
+
+    @Override
+    public Participant findByEmail(String email) throws ParticipantNotFoundException {
+        return participantRepository.findByEmail(email)
+                .orElseThrow(() -> new ParticipantNotFoundException("Participant with email " + email + " does not exist."));
+    }
 }

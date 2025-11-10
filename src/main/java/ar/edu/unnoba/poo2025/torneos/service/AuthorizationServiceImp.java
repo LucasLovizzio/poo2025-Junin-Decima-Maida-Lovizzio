@@ -26,7 +26,7 @@ public class AuthotizationServiceImp {
 		}
 
 		try {
-			if (!jwtTokenUtil.verifyToken(token)) {
+			if (!jwtTokenUtil.verify(token)) {
 				throw new AuthorizationFailedException("Authorization failed: Invalid token");
 			}
 

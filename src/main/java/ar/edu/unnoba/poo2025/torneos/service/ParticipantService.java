@@ -10,4 +10,5 @@ public interface ParticipantService {
     void delete(Participant p) throws ParticipantNotFoundException;
     Participant update(Participant p) throws ParticipantNotFoundException;
 
+    Participant findByEmail(String email) throws ParticipantNotFoundException;
 }
