@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthotizationServiceImp {
+public class AuthorizationServiceImp implements AuthorizationService {
 
 	private final JwtTokenUtil jwtTokenUtil;
 	private final ParticipantService participantService;
