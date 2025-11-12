@@ -1,6 +1,7 @@
 package ar.edu.unnoba.poo2025.torneos.resource;
 
 import ar.edu.unnoba.poo2025.torneos.dto.AuthenticationRequestDTO;
+import ar.edu.unnoba.poo2025.torneos.dto.AuthenticationResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.dto.CreateParticipantRequestDTO;
 import ar.edu.unnoba.poo2025.torneos.dto.CreateParticipantResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
@@ -9,7 +10,6 @@ import ar.edu.unnoba.poo2025.torneos.service.ParticipantService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/participants")
-
 public class ParticipantResource {
     private final ParticipantService participantService;
     private final ModelMapper modelMapper;
@@ -44,18 +43,13 @@ public class ParticipantResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
-    @PostMapping(value = "/auth", produces = "applicaion/json")
-    public ResponseEntity<?> authentication(@RequestBody AuthenticationRequestDTO dto) {
-        String token;
+    @PostMapping(value = "/auth", produces = "application/json")
+    public ResponseEntity<AuthenticationResponseDTO> authentication(@RequestBody AuthenticationRequestDTO dto) {
         Participant participant = modelMapper.map(dto, Participant.class);
-        try {
-            token = authenticationService.authenticate(participant);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("token: " + token);
+        String token = authenticationService.authenticate(participant);
+        // en caso de lanzar una exception, el GlobalExceptionHandler la captura automaticamente.
+        AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(token);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
 }
-

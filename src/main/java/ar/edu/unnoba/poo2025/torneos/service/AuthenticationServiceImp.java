@@ -1,5 +1,7 @@
 package ar.edu.unnoba.poo2025.torneos.service;
 
+import ar.edu.unnoba.poo2025.torneos.exception.AuthenticationFailedException;
+import ar.edu.unnoba.poo2025.torneos.exception.ParticipantNotFoundException;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.util.JwtTokenUtil;
 import ar.edu.unnoba.poo2025.torneos.util.PasswordEncoder;
@@ -21,13 +23,27 @@ public class AuthenticationServiceImp implements AuthenticationService {
     }
 
     @Override
-    public String authenticate(Participant participant) throws Exception {
+    public String authenticate(Participant participant) throws AuthenticationFailedException {
+        // validar entrada: null y valores en blanco
+        if (participant == null || isBlank(participant.getEmail()) || isBlank(participant.getPassword())) {
+            throw new AuthenticationFailedException();
+        }
 
-        Participant p = participantService.findByEmail(participant.getEmail());
-        if (p == null) throw new Exception("Participant not found");
+        try {
+            Participant p = participantService.findByEmail(participant.getEmail());
 
-        passwordEncoder.verify(participant.getPassword(), p.getPassword());
+            boolean matches = passwordEncoder.verify(participant.getPassword(), p.getPassword());
+            if (!matches) {
+                throw new AuthenticationFailedException();
+            }
+            return jwtTokenUtil.generateToken(p.getEmail());
 
-        return jwtTokenUtil.generateToken(p.getEmail());
+        } catch (ParticipantNotFoundException e) {
+            throw new AuthenticationFailedException();
+        }
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }
