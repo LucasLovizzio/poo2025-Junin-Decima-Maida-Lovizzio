@@ -13,7 +13,7 @@ public class Admin extends User {
     @OneToMany(mappedBy = "admin")
     private Set <Tournament> tournaments = new HashSet <>();
 
-    protected Admin() {}
+    public Admin() {}
 
     public Admin(String email, String password) {
         super(email, password);

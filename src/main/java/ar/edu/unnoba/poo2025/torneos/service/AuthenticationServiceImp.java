@@ -2,7 +2,9 @@ package ar.edu.unnoba.poo2025.torneos.service;
 
 import ar.edu.unnoba.poo2025.torneos.exception.AuthenticationFailedException;
 import ar.edu.unnoba.poo2025.torneos.exception.ParticipantNotFoundException;
+import ar.edu.unnoba.poo2025.torneos.model.Admin;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
+import ar.edu.unnoba.poo2025.torneos.model.User;
 import ar.edu.unnoba.poo2025.torneos.util.JwtTokenUtil;
 import ar.edu.unnoba.poo2025.torneos.util.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,16 @@ import org.springframework.stereotype.Service;
 public class AuthenticationServiceImp implements AuthenticationService {
 
     private final ParticipantService participantService;
+    private final AdminService adminService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public AuthenticationServiceImp(ParticipantService participantService, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil) {
+    public AuthenticationServiceImp(ParticipantService participantService, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, AdminService adminService) {
         this.participantService = participantService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.adminService = adminService;
     }
 
     @Override
@@ -37,6 +41,27 @@ public class AuthenticationServiceImp implements AuthenticationService {
                 throw new AuthenticationFailedException();
             }
             return jwtTokenUtil.generateToken(p.getEmail());
+
+        } catch (ParticipantNotFoundException e) {
+            throw new AuthenticationFailedException();
+        }
+    }
+
+    @Override
+    public String authenticate(Admin admin) throws AuthenticationFailedException {
+        // validar entrada: null y valores en blanco
+        if (admin == null || isBlank(admin.getEmail()) || isBlank(admin.getPassword())) {
+            throw new AuthenticationFailedException();
+        }
+
+        try {
+            Admin a = adminService.findByEmail(admin.getEmail());
+
+            boolean matches = passwordEncoder.verify(admin.getPassword(), a.getPassword());
+            if (!matches) {
+                throw new AuthenticationFailedException();
+            }
+            return jwtTokenUtil.generateToken(a.getEmail());
 
         } catch (ParticipantNotFoundException e) {
             throw new AuthenticationFailedException();

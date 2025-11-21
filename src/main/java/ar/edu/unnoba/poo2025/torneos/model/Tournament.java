@@ -17,7 +17,7 @@ public class Tournament {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @Lob @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)

@@ -7,6 +7,7 @@ import ar.edu.unnoba.poo2025.torneos.service.AuthorizationService;
 import ar.edu.unnoba.poo2025.torneos.service.TournamentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +29,9 @@ public class TournamentResource {
         this.authorizationService = authorizationService;
     }
     @GetMapping
-    public ResponseEntity<List<TournamentResponseDTO>> getTournaments(
-            @RequestHeader("Authorization") String token) {
-
-        // Valida el token JWT y obtiene el participante
-        Participant participant = authorizationService.authorize(token);
-
-        // Obtiene los torneos publicados
-        List<Tournament> tournaments = service.getPublishedTournaments();
+    public ResponseEntity<List<TournamentResponseDTO>> getTournaments() {
+        // Obtiene los torneos publicados ordenados
+        List<Tournament> tournaments = service.getTournamentsOrderDESC();
 
         // Mapea entidades a DTOs
         List<TournamentResponseDTO> tournamentDTOs = tournaments.stream()
@@ -45,5 +41,5 @@ public class TournamentResource {
         // Devuelve la lista con 200 OK
         return ResponseEntity.ok(tournamentDTOs);
     }
-
 }
+
