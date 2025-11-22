@@ -1,13 +1,8 @@
 package ar.edu.unnoba.poo2025.torneos.service;
 
-import ar.edu.unnoba.poo2025.torneos.dto.AdminResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.exception.AdminAlreadyExistsException;
 import ar.edu.unnoba.poo2025.torneos.exception.AdminNotFoundException;
-import ar.edu.unnoba.poo2025.torneos.exception.ParticipantAlreadyExistsException;
-import ar.edu.unnoba.poo2025.torneos.exception.ParticipantNotFoundException;
 import ar.edu.unnoba.poo2025.torneos.model.Admin;
-import ar.edu.unnoba.poo2025.torneos.model.Participant;
-import ar.edu.unnoba.poo2025.torneos.model.Tournament;
 import ar.edu.unnoba.poo2025.torneos.repository.AdminRepository;
 import ar.edu.unnoba.poo2025.torneos.util.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,42 +13,43 @@ import java.util.List;
 @Service
 public class AdminServiceImp implements AdminService {
 
-    private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder;
+	private final AdminRepository adminRepository;
+	private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public AdminServiceImp(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+	@Autowired
+	public AdminServiceImp(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+		this.adminRepository = adminRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
-    @Override
-    public Admin findByEmail(String email) throws AdminNotFoundException {
-        return adminRepository.findByEmail(email)
-                .orElseThrow(() -> new AdminNotFoundException("Admin with email " + email + " does not exist."));
-    }
+	@Override
+	public Admin findByEmail(String email) throws AdminNotFoundException {
+		return adminRepository.findByEmail(email)
+		                      .orElseThrow(() -> new AdminNotFoundException("Admin with email " + email + " does not exist."));
+	}
 
-    @Override
-    public List<Admin> getUsersAdmin() {
-        return adminRepository.findAll();
-    }
+	@Override
+	public List<Admin> getUsersAdmin() {
+		return adminRepository.findAll();
+	}
 
-    @Override
-    public Admin create(Admin a) throws AdminAlreadyExistsException {
-        // verificar si el admin ya existe, si existe lanzar una excepción, si no existe guardarlo.
-        adminRepository.findByEmail(a.getEmail())
-                .ifPresent(existing -> {
-                    throw new AdminAlreadyExistsException("Admin with email " + a.getEmail() + " already exists.");
-                });
+	@Override
+	public Admin create(Admin a) throws AdminAlreadyExistsException {
+		// verificar si el admin ya existe, si existe lanzar una excepción, si no existe guardarlo.
+		adminRepository.findByEmail(a.getEmail())
+		               .ifPresent(existing -> {
+			               throw new AdminAlreadyExistsException("Admin with email " + a.getEmail() + " already exists.");
+		               });
 
-        a.setPassword(passwordEncoder.encode(a.getPassword()));
-        return adminRepository.save(a);
-    }
+		a.setPassword(passwordEncoder.encode(a.getPassword()));
+		return adminRepository.save(a);
+	}
 
-    @Override
-    public void delete(Long id) throws AdminNotFoundException {
-        Admin admin = adminRepository.findById(id)
-                .orElseThrow(() -> new AdminNotFoundException("Admin with id " + id + " does not exist."));
-        adminRepository.delete(admin);
-    }
+	@Override
+	public void delete(Long id) throws AdminNotFoundException {
+		Admin admin = adminRepository.findById(id)
+		                             .orElseThrow(() -> new AdminNotFoundException("Admin with id " + id + " does not exist."));
+		adminRepository.delete(admin);
+	}
+
 }

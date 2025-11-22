@@ -38,7 +38,14 @@ public class Tournament {
 
     public Tournament() {}
 
-    public Tournament(Long id, String name, String description, LocalDateTime startDate, LocalDateTime endDate, Boolean published, Admin admin, Set<Competition> competitions) {
+    public Tournament(Long id,
+                      String name,
+                      String description,
+                      LocalDateTime startDate,
+                      LocalDateTime endDate,
+                      Boolean published,
+                      Admin admin,
+                      Set<Competition> competitions) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -48,10 +55,6 @@ public class Tournament {
         this.admin = admin;
         this.competitions = competitions;
     }
-
-    public void agregarCompetencia(Competition c) {}
-    public void editar() {}
-    public void eliminar() {}
 
     public Long getId() {
         return id;
