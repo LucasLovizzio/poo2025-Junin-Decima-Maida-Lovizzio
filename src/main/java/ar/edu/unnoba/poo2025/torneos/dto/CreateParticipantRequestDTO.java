@@ -1,11 +1,16 @@
 package ar.edu.unnoba.poo2025.torneos.dto;
 
+import ar.edu.unnoba.poo2025.torneos.validation.ValidDocType;
+import jakarta.validation.constraints.Email;
+
 public class CreateParticipantRequestDTO {
 
+	@Email(regexp = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", message = "Invalid email format")
 	private String email;
 	private String password;
 	private String name;
 	private String lastName;
+	@ValidDocType
 	private String docType;
 	private String docNumber;
 

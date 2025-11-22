@@ -7,6 +7,7 @@ import ar.edu.unnoba.poo2025.torneos.dto.CreateParticipantResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.service.AuthenticationService;
 import ar.edu.unnoba.poo2025.torneos.service.ParticipantService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class ParticipantResource {
 
 	// Crea un nuevo participante
 	@PostMapping(value = "/account", produces = "application/json")
-	public ResponseEntity<CreateParticipantResponseDTO> create(@RequestBody CreateParticipantRequestDTO dto) {
+	public ResponseEntity<CreateParticipantResponseDTO> create(@Valid @RequestBody CreateParticipantRequestDTO dto) {
 		Participant participant = modelMapper.map(dto, Participant.class);
 		participant = participantService.create(participant);
 		CreateParticipantResponseDTO responseDTO = modelMapper.map(participant, CreateParticipantResponseDTO.class);
