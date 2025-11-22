@@ -11,45 +11,43 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/participants")
 public class ParticipantResource {
-    private final ParticipantService participantService;
-    private final ModelMapper modelMapper;
-    private final AuthenticationService authenticationService;
 
-    @Autowired
-    public ParticipantResource(ParticipantService participantService, ModelMapper modelMapper, AuthenticationService authenticationService) {
-        this.participantService = participantService;
-        this.modelMapper = modelMapper;
-        this.authenticationService = authenticationService;
-    }
+	private final ParticipantService participantService;
+	private final ModelMapper modelMapper;
+	private final AuthenticationService authenticationService;
 
-    @PostMapping("/")
-    public ResponseEntity<CreateParticipantResponseDTO> create(@RequestBody CreateParticipantRequestDTO dto) {
-        // Convertir DTO → entidad
-        Participant participant = modelMapper.map(dto, Participant.class);
+	@Autowired
+	public ParticipantResource(ParticipantService participantService, ModelMapper modelMapper, AuthenticationService authenticationService) {
+		this.participantService = participantService;
+		this.modelMapper = modelMapper;
+		this.authenticationService = authenticationService;
+	}
 
-        // Delegar creación a la capa de servicio
-        participant = participantService.create(participant);
-        CreateParticipantResponseDTO responseDTO = modelMapper.map(participant, CreateParticipantResponseDTO.class);
+	// Permite autenticar a un participante
+	@PostMapping(value = "/auth", produces = "application/json")
+	public ResponseEntity<AuthenticationResponseDTO> authentication(@RequestBody AuthenticationRequestDTO dto) {
+		Participant participant = modelMapper.map(dto, Participant.class);
+		String token = authenticationService.authenticate(participant);
+		AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(token);
+		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+	}
 
-        // si esta bien retorna 201
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-    }
+	// Crea un nuevo participante
+	@PostMapping(value = "/account", produces = "application/json")
+	public ResponseEntity<CreateParticipantResponseDTO> create(@RequestBody CreateParticipantRequestDTO dto) {
+		Participant participant = modelMapper.map(dto, Participant.class);
+		participant = participantService.create(participant);
+		CreateParticipantResponseDTO responseDTO = modelMapper.map(participant, CreateParticipantResponseDTO.class);
+		return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+	}
 
-    @PostMapping(value = "/auth", produces = "application/json")
-    public ResponseEntity<AuthenticationResponseDTO> authentication(@RequestBody AuthenticationRequestDTO dto) {
-        Participant participant = modelMapper.map(dto, Participant.class);
-        String token = authenticationService.authenticate(participant);
-        // en caso de lanzar una exception, el GlobalExceptionHandler la captura automaticamente.
-        AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(token);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-    }
+	// Retorna un listado de todas las inscripciones a competencias de torneos en las que el
+	// participante se inscribió.
 
 }

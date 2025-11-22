@@ -24,4 +24,3 @@ public class CreateParticipantResponseDTO {
         this.email = email;
     }
 }
-
