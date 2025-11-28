@@ -1,16 +1,16 @@
 package ar.edu.unnoba.poo2025.torneos.service;
 
+import ar.edu.unnoba.poo2025.torneos.dto.CompetitionRequestDTO;
 import ar.edu.unnoba.poo2025.torneos.exception.CompetitionFullException;
 import ar.edu.unnoba.poo2025.torneos.exception.CompetitionNotFoundException;
 import ar.edu.unnoba.poo2025.torneos.exception.ParticipantAlredyInscribedInTournamentException;
 import ar.edu.unnoba.poo2025.torneos.exception.TournamentNotFoundException;
-import ar.edu.unnoba.poo2025.torneos.model.Competition;
-import ar.edu.unnoba.poo2025.torneos.model.Inscription;
-import ar.edu.unnoba.poo2025.torneos.model.Participant;
-import ar.edu.unnoba.poo2025.torneos.model.Tournament;
+import ar.edu.unnoba.poo2025.torneos.model.*;
+import ar.edu.unnoba.poo2025.torneos.repository.CompetitionRepository;
 import ar.edu.unnoba.poo2025.torneos.repository.InscriptionRepository;
 import ar.edu.unnoba.poo2025.torneos.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +25,14 @@ public class TournamentServiceImp implements TournamentService {
 
 	private final TournamentRepository tournamentRepository;
 	private final InscriptionRepository inscriptionRepository;
+	private final CompetitionRepository competitionRepository;
 
 	@Autowired
 	public TournamentServiceImp(TournamentRepository tournamentRepository,
-	                            InscriptionRepository inscriptionRepository) {
+								InscriptionRepository inscriptionRepository, CompetitionRepository competitionRepository) {
 		this.tournamentRepository = tournamentRepository;
 		this.inscriptionRepository = inscriptionRepository;
+		this.competitionRepository = competitionRepository;
 	}
 
 	@Override
@@ -106,6 +108,81 @@ public class TournamentServiceImp implements TournamentService {
 		inscription.setInscriptionDate(LocalDateTime.now());
 
 		inscriptionRepository.save(inscription);
+	}
+
+	@Override @Transactional
+	public Tournament publish(Long tournamentId) {
+		Tournament tournament = getTournamentById(tournamentId);
+
+		tournament.setPublished(true);
+		return tournamentRepository.save(tournament);
+	}
+
+	@Override @Transactional
+	public void removeCompetition(Long tournamentId, Long competitionId) {
+		Tournament tournament = getTournamentById(tournamentId);
+		Competition competition = getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+
+		tournament.getCompetitions().remove(competition);
+		tournamentRepository.save(tournament);
+	}
+
+	@Override @Transactional
+	public Competition changeTournamentCompetitionDetails(Long competitionId, CompetitionRequestDTO competitionRequest, Admin admin) {
+
+		Competition competition = competitionRepository.findById(competitionId)
+				.orElseThrow(CompetitionNotFoundException::new);
+
+		Tournament tournament = competition.getTournament();
+
+		if (!tournament.getAdmin().getId().equals(admin.getId()))
+			throw new AccessDeniedException("No tiene permisos para modificar esta competencia.");
+
+		// Validaciones
+		if (competitionRequest.getBasePrice() != null && competitionRequest.getBasePrice().compareTo(BigDecimal.ZERO) <= 0)
+			throw new IllegalArgumentException("El precio debe ser mayor que 0");
+
+		if (competitionRequest.getCapacity() != null && competitionRequest.getCapacity() <= 0)
+			throw new IllegalArgumentException("El capacidad debe ser mayor que 0");
+
+		if (competitionRequest.getName() != null && competitionRequest.getName().isEmpty())
+			throw new IllegalArgumentException("El nombre debe no puede ser vacio.");
+
+		if (competitionRequest.getBasePrice() != null)
+			competition.setBasePrice(competitionRequest.getBasePrice());
+
+		if (competitionRequest.getCapacity() != null)
+			competition.setCapacity(competitionRequest.getCapacity());
+
+		if (competitionRequest.getName() != null)
+			competition.setName(competitionRequest.getName());
+
+		return competitionRepository.save(competition);
+	}
+
+	@Override @Transactional
+	public Competition createCompetition(Long tournamentId, CompetitionRequestDTO competitionRequest) {
+		Tournament tournament = getTournamentById(tournamentId);
+
+		if (competitionRequest.getCapacity() == null || competitionRequest.getCapacity() <= 0)
+			throw new IllegalArgumentException("La capacidad debe ser mayor que 0");
+
+		if (competitionRequest.getBasePrice() == null || competitionRequest.getBasePrice().compareTo(BigDecimal.ZERO) <= 0)
+			throw new IllegalArgumentException("El precio debe ser mayor que 0");
+
+		if (competitionRequest.getName() == null || competitionRequest.getName().trim().isEmpty())
+			throw new IllegalArgumentException("El nombre de la competencia no puede ser nulo");
+
+		Competition competition = new Competition();
+		competition.setName(competitionRequest.getName());
+		competition.setBasePrice(competitionRequest.getBasePrice());
+		competition.setCapacity(competitionRequest.getCapacity());
+		competition.setTournament(tournament);
+
+		tournament.getCompetitions().add(competition);
+
+		return competitionRepository.save(competition);
+
 	}
 
 	private BigDecimal calculateFinalPrice(Long participantId, Long tournamentId, BigDecimal basePrice) {

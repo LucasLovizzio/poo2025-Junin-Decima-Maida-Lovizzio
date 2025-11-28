@@ -1,6 +1,8 @@
 package ar.edu.unnoba.poo2025.torneos.service;
 
+import ar.edu.unnoba.poo2025.torneos.dto.CompetitionRequestDTO;
 import ar.edu.unnoba.poo2025.torneos.exception.TournamentNotFoundException;
+import ar.edu.unnoba.poo2025.torneos.model.Admin;
 import ar.edu.unnoba.poo2025.torneos.model.Competition;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.model.Tournament;
@@ -19,4 +21,11 @@ public interface TournamentService {
 
 	void inscribeParticipantInCompetition(Participant p, Long tournamentId, Long competitionId);
 
+	Tournament publish(Long tournamentId);
+
+    void removeCompetition(Long tournamentId, Long competitionId);
+
+	Competition changeTournamentCompetitionDetails(Long tournamentId, CompetitionRequestDTO competitionRequest, Admin admin);
+
+	Competition createCompetition(Long tournamentId, CompetitionRequestDTO competitionRequest);
 }

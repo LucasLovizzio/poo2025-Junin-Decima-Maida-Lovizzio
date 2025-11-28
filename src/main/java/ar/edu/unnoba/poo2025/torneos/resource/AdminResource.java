@@ -2,7 +2,9 @@ package ar.edu.unnoba.poo2025.torneos.resource;
 
 import ar.edu.unnoba.poo2025.torneos.dto.*;
 import ar.edu.unnoba.poo2025.torneos.model.Admin;
+import ar.edu.unnoba.poo2025.torneos.model.Competition;
 import ar.edu.unnoba.poo2025.torneos.model.Tournament;
+import ar.edu.unnoba.poo2025.torneos.security.CustomUserDetails;
 import ar.edu.unnoba.poo2025.torneos.service.AdminService;
 import ar.edu.unnoba.poo2025.torneos.service.AuthenticationService;
 import ar.edu.unnoba.poo2025.torneos.service.TournamentService;
@@ -10,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -86,6 +89,63 @@ public class AdminResource {
 		                                                             .collect(Collectors.toList());
 
 		return ResponseEntity.ok(tournamentDTOs);
+	}
+
+	@GetMapping("/tournaments/{tournamentId}/competitions/{competitionId}")
+	public ResponseEntity<CompetitionResponseDTO> getTournamentCompetition(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
+
+		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/tournaments/{tournamentId}")
+	public ResponseEntity<CompetitionResponseDTO> createCompetition(@PathVariable Long tournamentId, @RequestBody CompetitionRequestDTO competitionRequest) {
+		Competition competition = tournamentService.createCompetition(tournamentId, competitionRequest);
+		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PutMapping("/tournaments/{tournamentId}")
+	public ResponseEntity<CompetitionResponseDTO> changeTournamentCompetitionDetails(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@PathVariable Long tournamentId,
+			@RequestBody CompetitionRequestDTO competitionRequest) {
+
+		Admin admin = (Admin) userDetails.getUser();
+
+		Competition competition = tournamentService.changeTournamentCompetitionDetails(
+				tournamentId,
+				competitionRequest,
+				admin);
+
+		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
+		return ResponseEntity.ok(response);
+	}
+
+	@DeleteMapping("/tournaments/{tournamentId}/competitions/{competitionId}")
+	public ResponseEntity<Void> removeCompetition(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
+		tournamentService.removeCompetition(tournamentId, competitionId);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/tournaments/{tournamentId}/published")
+	public ResponseEntity<TournamentResponseDTO> publishTournament(@PathVariable Long tournamentId) {
+		return ResponseEntity.ok(modelMapper.map(tournamentService.publish(tournamentId), TournamentResponseDTO.class));
+	}
+
+	@GetMapping("/tournaments/{tournamentId}/competitions/{competitionId}/inscripciones")
+	public ResponseEntity<List<InscriptionResponseDTO>> getInscriptions(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
+
+		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+		List<InscriptionResponseDTO> response = competition.getInscriptions().stream()
+				.map(inscription -> modelMapper.map(inscription, InscriptionResponseDTO.class))
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(response);
 	}
 
 }
