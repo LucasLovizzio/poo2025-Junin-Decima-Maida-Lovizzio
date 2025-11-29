@@ -5,17 +5,18 @@ import org.springframework.http.HttpStatusCode;
 
 public class ParticipantNotFoundException extends RuntimeException {
 
-    private static final HttpStatusCode code = HttpStatus.NOT_FOUND;
+	private static final HttpStatusCode CODE = HttpStatus.NOT_FOUND;
 
-    public ParticipantNotFoundException() {
-        super();
-    }
+	public ParticipantNotFoundException() {
+		super();
+	}
 
-    public ParticipantNotFoundException(String message) {
-        super(message);
-    }
+	public ParticipantNotFoundException(String message) {
+		super(message);
+	}
 
-    public HttpStatusCode getCode() {
-        return code;
-    }
+	public HttpStatusCode getCode() {
+		return CODE;
+	}
+
 }

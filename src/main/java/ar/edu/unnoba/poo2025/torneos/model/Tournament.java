@@ -9,112 +9,117 @@ import java.util.Set;
 @Table(name = "tournaments")
 public class Tournament {
 
-    @Id
-    @Column(name = "tournament_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@Column(name = "tournament_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, length = 255)
-    private String name;
+	@Column(nullable = false, length = 255)
+	private String name;
 
-    @Lob @Column(nullable = false)
-    private String description;
+	@Column(nullable = false, columnDefinition = "TEXT")
+	private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime startDate;
+	@Column(nullable = false)
+	private LocalDateTime startDate;
 
-    @Column(nullable = false)
-    private LocalDateTime endDate;
+	@Column(nullable = false)
+	private LocalDateTime endDate;
 
-    @Column(nullable = false)
-    private Boolean published;
+	@Column(nullable = false)
+	private Boolean published;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "creator_id", nullable = false)
-    private Admin admin;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "creator_id", nullable = false)
+	private Admin admin;
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Competition> competitions;
+	@OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<Competition> competitions;
 
-    public Tournament() {}
+	public Tournament() {
+	}
 
-    public Tournament(Long id, String name, String description, LocalDateTime startDate, LocalDateTime endDate, Boolean published, Admin admin, Set<Competition> competitions) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.published = published;
-        this.admin = admin;
-        this.competitions = competitions;
-    }
+	public Tournament(Long id,
+	                  String name,
+	                  String description,
+	                  LocalDateTime startDate,
+	                  LocalDateTime endDate,
+	                  Boolean published,
+	                  Admin admin,
+	                  Set<Competition> competitions) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.published = published;
+		this.admin = admin;
+		this.competitions = competitions;
+	}
 
-    public void agregarCompetencia(Competition c) {}
-    public void editar() {}
-    public void eliminar() {}
+	public Long getId() {
+		return id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public LocalDateTime getStartDate() {
+		return startDate;
+	}
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
+	public void setStartDate(LocalDateTime startDate) {
+		this.startDate = startDate;
+	}
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
+	public LocalDateTime getEndDate() {
+		return endDate;
+	}
 
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
+	public void setEndDate(LocalDateTime endDate) {
+		this.endDate = endDate;
+	}
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
+	public Boolean getPublished() {
+		return published;
+	}
 
-    public Boolean getPublished() {
-        return published;
-    }
+	public void setPublished(Boolean published) {
+		this.published = published;
+	}
 
-    public void setPublished(Boolean published) {
-        this.published = published;
-    }
+	public Admin getAdmin() {
+		return admin;
+	}
 
-    public Admin getAdmin() {
-        return admin;
-    }
+	public void setAdmin(Admin admin) {
+		this.admin = admin;
+	}
 
-    public void setAdmin(Admin admin) {
-        this.admin = admin;
-    }
+	public Set<Competition> getCompetitions() {
+		return competitions;
+	}
 
-    public Set <Competition> getCompetitions() {
-        return competitions;
-    }
+	public void setCompetitions(Set<Competition> competitions) {
+		this.competitions = competitions;
+	}
 
-    public void setCompetitions(Set <Competition> competitions) {
-        this.competitions = competitions;
-    }
 }
 

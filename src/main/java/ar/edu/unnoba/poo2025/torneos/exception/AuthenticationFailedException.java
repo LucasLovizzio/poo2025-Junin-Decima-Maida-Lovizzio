@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatusCode;
 
 public class AuthenticationFailedException extends RuntimeException {
 
-    private static final HttpStatusCode code = HttpStatus.UNAUTHORIZED;
+    private static final HttpStatusCode CODE = HttpStatus.UNAUTHORIZED;
 
     public AuthenticationFailedException() {
         super("Authentication failed: Invalid credentials");
@@ -16,6 +16,6 @@ public class AuthenticationFailedException extends RuntimeException {
     }
 
     public HttpStatusCode getCode() {
-        return code;
+        return CODE;
     }
 }

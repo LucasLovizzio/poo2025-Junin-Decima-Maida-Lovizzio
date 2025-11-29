@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatusCode;
 
 public class AuthorizationFailedException extends RuntimeException {
 
-    private static final HttpStatusCode code = HttpStatus.FORBIDDEN;
+    private static final HttpStatusCode CODE = HttpStatus.FORBIDDEN;
 
     public AuthorizationFailedException() {
         super("Authorization failed: Invalid or expired token");
@@ -16,6 +16,6 @@ public class AuthorizationFailedException extends RuntimeException {
     }
 
     public HttpStatusCode getCode() {
-        return code;
+        return CODE;
     }
 }
