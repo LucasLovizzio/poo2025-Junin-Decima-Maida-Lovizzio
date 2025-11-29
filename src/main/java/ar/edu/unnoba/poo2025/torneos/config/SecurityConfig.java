@@ -15,10 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Spring Security configuration using JWT authentication.
- * Uses UserRole enum for role-based access control without hardcoded strings.
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -46,6 +42,9 @@ public class SecurityConfig {
 				.requestMatchers("/admin/auth").permitAll()
 				.requestMatchers("/auth").permitAll()
 				.requestMatchers("/account").permitAll()
+				// .requestMatchers("/doc/**").permitAll() // En caso de utilizar un alias para la documentación
+				.requestMatchers("/v3/api-docs/**").permitAll()
+				.requestMatchers("/swagger-ui/**").permitAll()
 
 				.requestMatchers("/admin/**").hasRole(UserRole.ADMIN.name())
 

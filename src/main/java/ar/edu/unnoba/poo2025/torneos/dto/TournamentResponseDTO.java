@@ -1,8 +1,5 @@
 package ar.edu.unnoba.poo2025.torneos.dto;
 
-import ar.edu.unnoba.poo2025.torneos.model.Admin;
-import ar.edu.unnoba.poo2025.torneos.model.Competition;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -14,8 +11,8 @@ public class TournamentResponseDTO {
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private Boolean published;
-	private Admin admin;
-	private Set<Competition> competitions;
+	private Long adminId;
+	private Set<Long> competitionsIds;
 
 	public TournamentResponseDTO() {
 	}
@@ -26,16 +23,16 @@ public class TournamentResponseDTO {
 	                             LocalDateTime startDate,
 	                             LocalDateTime endDate,
 	                             Boolean published,
-	                             Admin admin,
-	                             Set<Competition> competitions) {
+	                             Long adminId,
+	                             Set<Long> competitionsIds) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.published = published;
-		this.admin = admin;
-		this.competitions = competitions;
+		this.adminId = adminId;
+		this.competitionsIds = competitionsIds;
 	}
 
 	public Long getId() {
@@ -86,20 +83,20 @@ public class TournamentResponseDTO {
 		this.published = published;
 	}
 
-	public Admin getAdmin() {
-		return admin;
+	public Long getAdminId() {
+		return adminId;
 	}
 
-	public void setAdmin(Admin admin) {
-		this.admin = admin;
+	public void setAdminId(Long adminId) {
+		this.adminId = adminId;
 	}
 
-	public Set<Competition> getCompetitions() {
-		return competitions;
+	public Set<Long> getCompetitionsIds() {
+		return competitionsIds;
 	}
 
-	public void setCompetitions(Set<Competition> competitions) {
-		this.competitions = competitions;
+	public void setCompetitionsIds(Set<Long> competitionsIds) {
+		this.competitionsIds = competitionsIds;
 	}
 
 }

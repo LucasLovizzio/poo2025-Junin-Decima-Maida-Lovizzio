@@ -8,6 +8,8 @@ import ar.edu.unnoba.poo2025.torneos.security.CustomUserDetails;
 import ar.edu.unnoba.poo2025.torneos.service.AdminService;
 import ar.edu.unnoba.poo2025.torneos.service.AuthenticationService;
 import ar.edu.unnoba.poo2025.torneos.service.TournamentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
+@Tag(name = "Admin", description = "Endpoints for admin operations")
 public class AdminResource {
 
 	private final ModelMapper modelMapper;
@@ -36,6 +39,7 @@ public class AdminResource {
 	}
 
 	@PostMapping(value = "/auth", produces = "application/json")
+	@Operation(summary = "Authenticate an admin and return a JWT token")
 	public ResponseEntity<AuthenticationResponseDTO> authentication(@RequestBody AuthenticationRequestDTO dto) {
 		Admin admin = modelMapper.map(dto, Admin.class);
 		String token = authenticationService.authenticate(admin);
@@ -45,6 +49,7 @@ public class AdminResource {
 	}
 
 	@PostMapping(value = "/accounts")
+	@Operation(summary = "Create a new admin account")
 	public ResponseEntity<CreateAdminResponseDTO> create(@RequestBody CreateAdminRequestDTO dto) {
 		// Convertir DTO → entidad
 		Admin admin = modelMapper.map(dto, Admin.class);
@@ -58,13 +63,21 @@ public class AdminResource {
 	}
 
 	@DeleteMapping("/accounts/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		// Delegar eliminación a la capa de servicio
+	@Operation(summary = "Delete an admin account by ID", description = "An admin cannot delete their own account")
+	public ResponseEntity<DeleteAdminResponseDTO> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long id) {
+		if (userDetails != null) {
+			Admin current = (Admin) userDetails.getUser();
+			if (current != null && current.getId() != null && current.getId().equals(id)) {
+				throw new IllegalArgumentException("An admin cannot delete their own account.");
+			}
+		}
 		adminService.delete(id);
-		return ResponseEntity.noContent().build();
+		DeleteAdminResponseDTO response = new DeleteAdminResponseDTO("Admin with ID " + id + " has been deleted.");
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@GetMapping(value = "/accounts")
+	@Operation(summary = "Get all admin users", description = "Returns a list of all admin users")
 	public ResponseEntity<List<AdminResponseDTO>> getUsersAdmin() {
 
 		// Obtiene los admins
@@ -80,6 +93,8 @@ public class AdminResource {
 	}
 
 	@GetMapping("/tournaments")
+	@Operation(summary = "Get all tournaments ordered by date descending",
+	           description = "Returns a list of all tournaments ordered by date in descending order")
 	public ResponseEntity<List<TournamentResponseOrderDTO>> getTournaments() {
 		// Obtener torneos ordenados por fecha DESC
 		List<Tournament> tournaments = tournamentService.getTournamentsOrderDesc();
@@ -92,6 +107,8 @@ public class AdminResource {
 	}
 
 	@GetMapping("/tournaments/{tournamentId}/competitions/{competitionId}")
+	@Operation(summary = "Get competition details by tournament ID and competition ID",
+	           description = "Returns the details of a specific competition within a specific tournament")
 	public ResponseEntity<CompetitionResponseDTO> getTournamentCompetition(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
 
 		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
@@ -100,7 +117,24 @@ public class AdminResource {
 		return ResponseEntity.ok(response);
 	}
 
+	@PostMapping("/tournaments")
+	@Operation(summary = "Create a new tournament",
+	           description = "Creates a new tournament with the provided details")
+	public ResponseEntity<TournamentResponseDTO> createTournament(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CreateTournamentRequestDTO tournamentRequest) {
+		Admin admin = (Admin) userDetails.getUser();
+		Tournament tournament = modelMapper.map(tournamentRequest, Tournament.class);
+		tournament.setAdmin(admin);
+		tournament.setPublished(false);
+
+		Tournament createdTournament = tournamentService.createTournament(tournament, admin);
+		TournamentResponseDTO response = modelMapper.map(createdTournament, TournamentResponseDTO.class);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
 	@PostMapping("/tournaments/{tournamentId}")
+	@Operation(summary = "Create a new competition within a tournament",
+	           description = "Creates a new competition within the specified tournament")
 	public ResponseEntity<CompetitionResponseDTO> createCompetition(@PathVariable Long tournamentId, @RequestBody CompetitionRequestDTO competitionRequest) {
 		Competition competition = tournamentService.createCompetition(tournamentId, competitionRequest);
 		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
@@ -109,41 +143,51 @@ public class AdminResource {
 	}
 
 	@PutMapping("/tournaments/{tournamentId}")
+	@Operation(summary = "Change competition details within a tournament",
+	           description = "Updates the details of a specific competition within the specified tournament")
 	public ResponseEntity<CompetitionResponseDTO> changeTournamentCompetitionDetails(
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long tournamentId,
-			@RequestBody CompetitionRequestDTO competitionRequest) {
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long tournamentId,
+		@RequestBody CompetitionRequestDTO competitionRequest) {
 
 		Admin admin = (Admin) userDetails.getUser();
 
 		Competition competition = tournamentService.changeTournamentCompetitionDetails(
-				tournamentId,
-				competitionRequest,
-				admin);
+			tournamentId,
+			competitionRequest,
+			admin);
 
 		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
 		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/tournaments/{tournamentId}/competitions/{competitionId}")
+	@Operation(summary = "Remove a competition from a tournament",
+	           description = "Removes the specified competition from the specified tournament")
 	public ResponseEntity<Void> removeCompetition(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
 		tournamentService.removeCompetition(tournamentId, competitionId);
 
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PatchMapping("/tournaments/{tournamentId}/published")
+	@Operation(summary = "Publish a tournament",
+	           description = "Sets the tournament's published status to true")
 	public ResponseEntity<TournamentResponseDTO> publishTournament(@PathVariable Long tournamentId) {
-		return ResponseEntity.ok(modelMapper.map(tournamentService.publish(tournamentId), TournamentResponseDTO.class));
+		Tournament tournament = tournamentService.publish(tournamentId);
+		TournamentResponseDTO response = tournamentService.convertToDto(tournament);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/tournaments/{tournamentId}/competitions/{competitionId}/inscripciones")
+	@Operation(summary = "Get inscriptions for a competition within a tournament",
+	           description = "Returns a list of inscriptions for the specified competition within the specified tournament")
 	public ResponseEntity<List<InscriptionResponseDTO>> getInscriptions(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
 
 		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
 		List<InscriptionResponseDTO> response = competition.getInscriptions().stream()
-				.map(inscription -> modelMapper.map(inscription, InscriptionResponseDTO.class))
-				.collect(Collectors.toList());
+		                                                   .map(inscription -> modelMapper.map(inscription, InscriptionResponseDTO.class))
+		                                                   .collect(Collectors.toList());
 
 		return ResponseEntity.ok(response);
 	}

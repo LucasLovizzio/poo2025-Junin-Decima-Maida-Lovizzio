@@ -66,4 +66,8 @@ public abstract class User {
 		this.password = password;
 	}
 
+	public void setRole(UserRole userRole) {
+
+	}
+
 }

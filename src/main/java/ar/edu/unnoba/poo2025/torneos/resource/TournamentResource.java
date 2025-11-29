@@ -6,6 +6,8 @@ import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.model.Tournament;
 import ar.edu.unnoba.poo2025.torneos.security.CustomUserDetails;
 import ar.edu.unnoba.poo2025.torneos.service.TournamentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Tag(name = "Tournaments", description = "Endpoints for tournament and competition management")
 public class TournamentResource {
 
 	private final TournamentService tournamentService;
@@ -32,6 +35,8 @@ public class TournamentResource {
 
 	// Retorna el listado de torneos publicados próximos a realizarse o en desarrollo
 	@GetMapping("/tournaments")
+	@Operation(summary = "Get published and next tournaments or in progress",
+	           description = "Returns a list of tournaments that are either published and upcoming or currently in progress.")
 	public ResponseEntity<List<TournamentResponseDTO>> getPublishedAndNextTournamentsOrInProgress(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -43,6 +48,8 @@ public class TournamentResource {
 	}
 
 	@GetMapping("/tournaments/{id}")
+	@Operation(summary = "Get tournament by ID",
+	           description = "Returns the details of a specific tournament identified by its ID.")
 	public ResponseEntity<TournamentResponseDTO> getTournamentById(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long id) {
@@ -53,6 +60,8 @@ public class TournamentResource {
 	}
 
 	@GetMapping("/tournaments/{tournamentId}/competitions")
+	@Operation(summary = "Get competitions by tournament ID",
+	           description = "Returns a list of competitions associated with a specific tournament identified by its ID.")
 	public ResponseEntity<List<CompetitionResponseDTO>> getCompetitionsByTournamentId(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long tournamentId) {
@@ -65,6 +74,8 @@ public class TournamentResource {
 	}
 
 	@GetMapping("/tournaments/{tournamentId}/competitions/{id}")
+	@Operation(summary = "Get competition by ID within a tournament",
+	           description = "Returns the details of a specific competition identified by its ID within a given tournament.")
 	public ResponseEntity<CompetitionResponseDTO> getCompetitionById(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long tournamentId,
@@ -79,6 +90,8 @@ public class TournamentResource {
 	}
 
 	@PostMapping("/tournaments/{tournamentId}/competitions/{id}/inscription")
+	@Operation(summary = "Inscribe authenticated participant in a competition",
+	           description = "Allows the authenticated participant to inscribe in a specific competition within a tournament.")
 	public ResponseEntity<Void> inscribeParticipantInCompetition(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long tournamentId,

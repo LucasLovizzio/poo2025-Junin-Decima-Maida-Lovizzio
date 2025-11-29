@@ -49,6 +49,10 @@ public class AdminServiceImp implements AdminService {
 	public void delete(Long id) throws AdminNotFoundException {
 		Admin admin = adminRepository.findById(id)
 		                             .orElseThrow(() -> new AdminNotFoundException("Admin with id " + id + " does not exist."));
+		if (!admin.getTournaments().isEmpty()) {
+			throw new AdminNotFoundException("Admin with id " + id + " cannot be deleted because they have associated tournaments.");
+		}
+
 		adminRepository.delete(admin);
 	}
 

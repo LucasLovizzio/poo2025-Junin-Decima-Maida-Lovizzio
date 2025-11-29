@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidDocType {
 
-	String message() default "Invalid document type. Allowed values: DNI, PASSPORT";
+	String message() default "Invalid document type";
 	Class<?>[] groups() default {};
 	Class<? extends Payload>[] payload() default {};
 

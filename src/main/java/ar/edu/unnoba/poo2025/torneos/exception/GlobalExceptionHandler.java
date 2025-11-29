@@ -59,7 +59,17 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CompetitionFullException.class)
 	public ResponseEntity<ExceptionResponseDTO> handleCompetitionFull(CompetitionFullException ex) {
-		return ResponseEntity.status(409).body(new ExceptionResponseDTO(ex.getMessage()));
+		return ResponseEntity.status(ex.getCode()).body(new ExceptionResponseDTO(ex.getMessage()));
+	}
+
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ExceptionResponseDTO> handleIllegalState(IllegalStateException ex) {
+		return ResponseEntity.status(400).body(new ExceptionResponseDTO(ex.getMessage()));
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ExceptionResponseDTO> handleIllegalArgument(IllegalArgumentException ex) {
+		return ResponseEntity.status(400).body(new ExceptionResponseDTO(ex.getMessage()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

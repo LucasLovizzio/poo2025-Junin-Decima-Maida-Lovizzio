@@ -8,17 +8,15 @@ public class CompetitionResponseDTO {
 	private String name;
 	private BigDecimal basePrice;
 	private Integer capacity;
-	private String category;
 
 	public CompetitionResponseDTO() {
 	}
 
-	public CompetitionResponseDTO(Long id, String name, BigDecimal basePrice, Integer capacity, String category) {
+	public CompetitionResponseDTO(Long id, String name, BigDecimal basePrice, Integer capacity) {
 		this.id = id;
 		this.name = name;
 		this.basePrice = basePrice;
 		this.capacity = capacity;
-		this.category = category;
 	}
 
 	public Long getId() {
@@ -51,14 +49,6 @@ public class CompetitionResponseDTO {
 
 	public void setCapacity(Integer capacity) {
 		this.capacity = capacity;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
 	}
 
 }

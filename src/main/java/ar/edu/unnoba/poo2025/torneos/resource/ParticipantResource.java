@@ -7,6 +7,8 @@ import ar.edu.unnoba.poo2025.torneos.dto.CreateParticipantResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.service.AuthenticationService;
 import ar.edu.unnoba.poo2025.torneos.service.ParticipantService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Participant", description = "Endpoints for participant authentication and account management")
 public class ParticipantResource {
 
 	private final ParticipantService participantService;
@@ -30,8 +33,9 @@ public class ParticipantResource {
 		this.authenticationService = authenticationService;
 	}
 
-	// Permite autenticar a un participante
 	@PostMapping(value = "/auth", produces = "application/json")
+	@Operation(summary = "Authenticate participant",
+	           description = "Allows a participant to authenticate and receive a JWT token.")
 	public ResponseEntity<AuthenticationResponseDTO> authentication(@RequestBody AuthenticationRequestDTO dto) {
 		Participant participant = modelMapper.map(dto, Participant.class);
 		String token = authenticationService.authenticate(participant);
@@ -39,16 +43,13 @@ public class ParticipantResource {
 		return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 	}
 
-	// Crea un nuevo participante
 	@PostMapping(value = "/account", produces = "application/json")
+	@Operation(summary = "Create participant account", description = "Creates a new participant account.")
 	public ResponseEntity<CreateParticipantResponseDTO> create(@Valid @RequestBody CreateParticipantRequestDTO dto) {
 		Participant participant = modelMapper.map(dto, Participant.class);
 		participant = participantService.create(participant);
 		CreateParticipantResponseDTO responseDTO = modelMapper.map(participant, CreateParticipantResponseDTO.class);
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 	}
-
-	// Retorna un listado de todas las inscripciones a competencias de torneos en las que el
-	// participante se inscribió.
 
 }

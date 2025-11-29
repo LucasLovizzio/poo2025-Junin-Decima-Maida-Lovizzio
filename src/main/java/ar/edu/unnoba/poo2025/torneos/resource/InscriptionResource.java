@@ -5,6 +5,8 @@ import ar.edu.unnoba.poo2025.torneos.dto.InscriptionResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
 import ar.edu.unnoba.poo2025.torneos.security.CustomUserDetails;
 import ar.edu.unnoba.poo2025.torneos.service.InscriptionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/inscriptions")
+@Tag(name = "Inscriptions", description = "Endpoints for participant inscriptions")
 public class InscriptionResource {
 
 	private final InscriptionService inscriptionService;
@@ -31,6 +34,8 @@ public class InscriptionResource {
 	}
 
 	@GetMapping
+	@Operation(summary = "Get all inscriptions for the authenticated participant",
+	           description = "Returns a list of all inscriptions associated with the authenticated participant.")
 	public ResponseEntity<List<InscriptionResponseDTO>> getParticipantInscriptions(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -46,6 +51,8 @@ public class InscriptionResource {
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Get inscription detail by ID for the authenticated participant",
+	           description = "Returns detailed information about a specific inscription belonging to the authenticated participant.")
 	public ResponseEntity<InscriptionDetailResponseDTO> getParticipantInscriptionDetail(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long id) {

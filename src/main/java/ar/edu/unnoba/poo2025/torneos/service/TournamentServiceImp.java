@@ -1,11 +1,13 @@
 package ar.edu.unnoba.poo2025.torneos.service;
 
 import ar.edu.unnoba.poo2025.torneos.dto.CompetitionRequestDTO;
+import ar.edu.unnoba.poo2025.torneos.dto.TournamentResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.exception.CompetitionFullException;
 import ar.edu.unnoba.poo2025.torneos.exception.CompetitionNotFoundException;
 import ar.edu.unnoba.poo2025.torneos.exception.ParticipantAlredyInscribedInTournamentException;
 import ar.edu.unnoba.poo2025.torneos.exception.TournamentNotFoundException;
 import ar.edu.unnoba.poo2025.torneos.model.*;
+import ar.edu.unnoba.poo2025.torneos.repository.AdminRepository;
 import ar.edu.unnoba.poo2025.torneos.repository.CompetitionRepository;
 import ar.edu.unnoba.poo2025.torneos.repository.InscriptionRepository;
 import ar.edu.unnoba.poo2025.torneos.repository.TournamentRepository;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentServiceImp implements TournamentService {
@@ -26,13 +30,17 @@ public class TournamentServiceImp implements TournamentService {
 	private final TournamentRepository tournamentRepository;
 	private final InscriptionRepository inscriptionRepository;
 	private final CompetitionRepository competitionRepository;
+	private final AdminRepository adminRepository;
 
 	@Autowired
 	public TournamentServiceImp(TournamentRepository tournamentRepository,
-								InscriptionRepository inscriptionRepository, CompetitionRepository competitionRepository) {
+	                            InscriptionRepository inscriptionRepository,
+	                            CompetitionRepository competitionRepository,
+	                            AdminRepository adminRepository) {
 		this.tournamentRepository = tournamentRepository;
 		this.inscriptionRepository = inscriptionRepository;
 		this.competitionRepository = competitionRepository;
+		this.adminRepository = adminRepository;
 	}
 
 	@Override
@@ -110,28 +118,50 @@ public class TournamentServiceImp implements TournamentService {
 		inscriptionRepository.save(inscription);
 	}
 
-	@Override @Transactional
+	@Override
+	@Transactional
+	public Tournament createTournament(Tournament tournament, Admin admin) {
+		Admin existingAdmin = adminRepository.findById(admin.getId())
+		                                     .orElseThrow(() -> new IllegalArgumentException("Admin no encontrado"));
+		tournament.setAdmin(existingAdmin);
+		existingAdmin.getTournaments().add(tournament);
+		return tournamentRepository.save(tournament);
+	}
+
+	@Override
+	@Transactional
 	public Tournament publish(Long tournamentId) {
-		Tournament tournament = getTournamentById(tournamentId);
+		Tournament tournament = tournamentRepository.findById(tournamentId)
+		                                            .orElseThrow(() -> new TournamentNotFoundException("No se ha podido encontrar el torneo."));
 
 		tournament.setPublished(true);
 		return tournamentRepository.save(tournament);
 	}
 
-	@Override @Transactional
+	@Override
+	@Transactional
 	public void removeCompetition(Long tournamentId, Long competitionId) {
-		Tournament tournament = getTournamentById(tournamentId);
-		Competition competition = getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+		Tournament tournament = tournamentRepository.findById(tournamentId)
+		                                            .orElseThrow(() -> new TournamentNotFoundException("No se ha podido encontrar el torneo."));
+		Competition competition = tournamentRepository.findCompetitionByIdAndTournamentId(competitionId, tournamentId)
+		                                              .orElseThrow(() -> new CompetitionNotFoundException("No se ha podido encontrar la competencia en el torneo."));
+
+		if (!tournament.getCompetitions().contains(competition)) {
+			throw new CompetitionNotFoundException("La competencia no pertenece al torneo especificado.");
+		} else if (!competition.getInscriptions().isEmpty()) {
+			throw new IllegalStateException("No se puede eliminar una competencia con inscripciones.");
+		}
 
 		tournament.getCompetitions().remove(competition);
 		tournamentRepository.save(tournament);
 	}
 
-	@Override @Transactional
+	@Override
+	@Transactional
 	public Competition changeTournamentCompetitionDetails(Long competitionId, CompetitionRequestDTO competitionRequest, Admin admin) {
 
 		Competition competition = competitionRepository.findById(competitionId)
-				.orElseThrow(CompetitionNotFoundException::new);
+		                                               .orElseThrow(CompetitionNotFoundException::new);
 
 		Tournament tournament = competition.getTournament();
 
@@ -160,7 +190,8 @@ public class TournamentServiceImp implements TournamentService {
 		return competitionRepository.save(competition);
 	}
 
-	@Override @Transactional
+	@Override
+	@Transactional
 	public Competition createCompetition(Long tournamentId, CompetitionRequestDTO competitionRequest) {
 		Tournament tournament = getTournamentById(tournamentId);
 
@@ -198,6 +229,29 @@ public class TournamentServiceImp implements TournamentService {
 		}
 
 		return basePrice;
+	}
+
+	public TournamentResponseDTO convertToDto(Tournament tournament) {
+		TournamentResponseDTO dto = new TournamentResponseDTO();
+		dto.setId(tournament.getId());
+		dto.setName(tournament.getName());
+		dto.setDescription(tournament.getDescription());
+		dto.setStartDate(tournament.getStartDate());
+		dto.setEndDate(tournament.getEndDate());
+		dto.setPublished(tournament.getPublished());
+
+		// Mapea solo el ID del admin
+		dto.setAdminId(tournament.getAdmin() != null ? tournament.getAdmin().getId() : null);
+
+		// Mapea solo los IDs de las competitions
+		if (tournament.getCompetitions() != null) {
+			Set<Long> competitionIds = tournament.getCompetitions().stream()
+			                                     .map(Competition::getId)
+			                                     .collect(Collectors.toSet());
+			dto.setCompetitionsIds(competitionIds);
+		}
+
+		return dto;
 	}
 
 }
