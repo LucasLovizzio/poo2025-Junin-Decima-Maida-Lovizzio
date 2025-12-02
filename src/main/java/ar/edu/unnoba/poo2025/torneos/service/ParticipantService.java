@@ -12,5 +12,4 @@ public interface ParticipantService {
 
 	Participant findByEmail(String email) throws ParticipantNotFoundException;
 
-    Participant findByEmail(String email) throws ParticipantNotFoundException;
 }
