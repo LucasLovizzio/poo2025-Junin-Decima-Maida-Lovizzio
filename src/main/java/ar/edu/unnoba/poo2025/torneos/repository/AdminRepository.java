@@ -9,6 +9,13 @@ import java.util.Optional;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
-    @Query("SELECT p FROM Admin p WHERE p.email = :email")
-    Optional<Admin> findByEmail(@Param("email") String email);
+	@Query("SELECT p FROM Admin p WHERE p.email = :email")
+	Optional<Admin> findByEmail(@Param("email") String email);
+	@Query("""
+		SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END
+		FROM Tournament t
+		WHERE t.admin.id = :adminId
+		""")
+	boolean hasTournamentsAssociated(@Param("adminId") Long adminId);
+
 }

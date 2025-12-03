@@ -60,7 +60,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
 			if (!matches) {
 				throw new AuthenticationFailedException();
 			}
-
 			return jwtTokenUtil.generateToken(a.getEmail(), a.getRole());
 
 		} catch (AdminNotFoundException e) {

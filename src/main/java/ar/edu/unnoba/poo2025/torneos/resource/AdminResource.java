@@ -63,17 +63,13 @@ public class AdminResource {
 	}
 
 	@DeleteMapping("/accounts/{id}")
-	@Operation(summary = "Delete an admin account by ID", description = "An admin cannot delete their own account")
-	public ResponseEntity<DeleteAdminResponseDTO> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long id) {
-		if (userDetails != null) {
-			Admin current = (Admin) userDetails.getUser();
-			if (current != null && current.getId() != null && current.getId().equals(id)) {
-				throw new IllegalArgumentException("An admin cannot delete their own account.");
-			}
-		}
-		adminService.delete(id);
-		DeleteAdminResponseDTO response = new DeleteAdminResponseDTO("Admin with ID " + id + " has been deleted.");
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+	@Operation(summary = "Delete an admin account by ID", description = "Cannot delete own account")
+	public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long id) {
+		Long currentAdminId = userDetails.getUser().getId();
+
+		adminService.delete(id, currentAdminId);
+
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping(value = "/accounts")

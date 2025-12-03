@@ -11,6 +11,6 @@ public interface AdminService {
 	Admin findByEmail(String email) throws AdminNotFoundException;
 	List<Admin> getUsersAdmin() throws AdminNotFoundException;
 	Admin create(Admin p) throws AdminAlreadyExistsException;
-	void delete(Long id) throws AdminNotFoundException;
+	void delete(Long id, Long currentAdminId);
 
 }

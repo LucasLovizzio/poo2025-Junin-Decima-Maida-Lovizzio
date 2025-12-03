@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.View;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +35,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, View error) throws Exception {
 		http
 			.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -42,10 +43,10 @@ public class SecurityConfig {
 				.requestMatchers("/admin/auth").permitAll()
 				.requestMatchers("/auth").permitAll()
 				.requestMatchers("/account").permitAll()
+				.requestMatchers("/error").permitAll()
 				// .requestMatchers("/doc/**").permitAll() // En caso de utilizar un alias para la documentación
 				.requestMatchers("/v3/api-docs/**").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
-
 				.requestMatchers("/admin/**").hasRole(UserRole.ADMIN.name())
 
 				.requestMatchers("/tournaments/**").hasRole(UserRole.PARTICIPANT.name())
