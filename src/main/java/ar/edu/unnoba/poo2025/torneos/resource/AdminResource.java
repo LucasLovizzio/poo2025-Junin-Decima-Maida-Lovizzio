@@ -91,12 +91,12 @@ public class AdminResource {
 	@GetMapping("/tournaments")
 	@Operation(summary = "Get all tournaments ordered by date descending",
 	           description = "Returns a list of all tournaments ordered by date in descending order")
-	public ResponseEntity<List<TournamentResponseOrderDTO>> getTournaments() {
+	public ResponseEntity<List<TournamentResponseDTO>> getTournaments() {
 		// Obtener torneos ordenados por fecha DESC
 		List<Tournament> tournaments = tournamentService.getTournamentsOrderDesc();
-		// Mapear al DTO con fechas y publicado
-		List<TournamentResponseOrderDTO> tournamentDTOs = tournaments.stream()
-		                                                             .map(tournament -> modelMapper.map(tournament, TournamentResponseOrderDTO.class))
+		// Mapear al DTO completo con toda la información
+		List<TournamentResponseDTO> tournamentDTOs = tournaments.stream()
+		                                                             .map(tournament -> modelMapper.map(tournament, TournamentResponseDTO.class))
 		                                                             .collect(Collectors.toList());
 
 		return ResponseEntity.ok(tournamentDTOs);

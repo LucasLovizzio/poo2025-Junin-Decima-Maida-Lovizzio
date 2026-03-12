@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class TournamentResponseOrderDTO {
 
+    private Long id;
     private String name;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -14,11 +15,20 @@ public class TournamentResponseOrderDTO {
     public TournamentResponseOrderDTO() {
     }
 
-    public TournamentResponseOrderDTO(String name, LocalDateTime startDate, LocalDateTime endDate, Boolean published) {
+    public TournamentResponseOrderDTO(Long id, String name, LocalDateTime startDate, LocalDateTime endDate, Boolean published) {
+        this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.published = published ? "Publicado" : "Despublicado";
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
