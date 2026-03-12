@@ -102,6 +102,16 @@ public class AdminResource {
 		return ResponseEntity.ok(tournamentDTOs);
 	}
 
+	@GetMapping("/tournaments/{tournamentId}/competitions")
+	@Operation(summary = "Get all competitions for a tournament",
+	           description = "Returns all competitions within a specific tournament for admin management")
+	public ResponseEntity<List<CompetitionResponseDTO>> getCompetitionsByTournament(@PathVariable Long tournamentId) {
+		List<CompetitionResponseDTO> competitions = tournamentService.getCompetitionsByTournamentId(tournamentId).stream()
+		                                                             .map(comp -> modelMapper.map(comp, CompetitionResponseDTO.class))
+		                                                             .collect(Collectors.toList());
+		return ResponseEntity.ok(competitions);
+	}
+
 	@GetMapping("/tournaments/{tournamentId}/competitions/{competitionId}")
 	@Operation(summary = "Get competition details by tournament ID and competition ID",
 	           description = "Returns the details of a specific competition within a specific tournament")
