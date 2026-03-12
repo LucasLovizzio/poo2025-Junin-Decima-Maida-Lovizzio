@@ -22,8 +22,6 @@ public interface TournamentService {
 	Competition getCompetitionByIdAndTournamentId(Long competitionId, Long tournamentId);
 	Competition getCompetitionByIdAndTournamentIdAdmin(Long competitionId, Long tournamentId);
 
-	List<Competition> getAdminCompetitionsByTournamentId(Long tournamentId);
-
 	void inscribeParticipantInCompetition(Participant p, Long tournamentId, Long competitionId);
 
 	Tournament createTournament(Tournament tournament, Admin admin);
