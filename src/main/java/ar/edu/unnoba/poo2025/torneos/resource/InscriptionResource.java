@@ -2,9 +2,12 @@ package ar.edu.unnoba.poo2025.torneos.resource;
 
 import ar.edu.unnoba.poo2025.torneos.dto.InscriptionDetailResponseDTO;
 import ar.edu.unnoba.poo2025.torneos.dto.InscriptionResponseDTO;
+import ar.edu.unnoba.poo2025.torneos.model.Inscription;
 import ar.edu.unnoba.poo2025.torneos.model.Participant;
+import ar.edu.unnoba.poo2025.torneos.model.Tournament;
 import ar.edu.unnoba.poo2025.torneos.security.CustomUserDetails;
 import ar.edu.unnoba.poo2025.torneos.service.InscriptionService;
+import ar.edu.unnoba.poo2025.torneos.service.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
@@ -25,12 +28,14 @@ import java.util.stream.Collectors;
 public class InscriptionResource {
 
 	private final InscriptionService inscriptionService;
+	private final TournamentService tournamentService;
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public InscriptionResource(InscriptionService inscriptionService, ModelMapper modelMapper) {
+	public InscriptionResource(InscriptionService inscriptionService, TournamentService tournamentService, ModelMapper modelMapper) {
 		this.inscriptionService = inscriptionService;
-		this.modelMapper = modelMapper;
+        this.tournamentService = tournamentService;
+        this.modelMapper = modelMapper;
 	}
 
 	@GetMapping
@@ -59,10 +64,20 @@ public class InscriptionResource {
 
 		Participant participant = (Participant) userDetails.getUser();
 
+		Inscription inscription = inscriptionService.getInscriptionByIdAndParticipantId(id, participant.getId());
+
 		InscriptionDetailResponseDTO dto = modelMapper.map(
-			inscriptionService.getInscriptionByIdAndParticipantId(id, participant.getId()),
-			InscriptionDetailResponseDTO.class
+				inscription,
+				InscriptionDetailResponseDTO.class
 		);
+
+		Tournament t = tournamentService.getTournamentById(inscription.getCompetition().getTournament().getId());
+
+		dto.setTournamentId(t.getId());
+		dto.setTournamentName(t.getName());
+		dto.setTournamentDescription(t.getDescription());
+		dto.setTournamentStartDate(t.getStartDate());
+		dto.setTournamentFinishDate(t.getEndDate());
 
 		return ResponseEntity.ok(dto);
 	}
