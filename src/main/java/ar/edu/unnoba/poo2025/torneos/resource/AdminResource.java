@@ -190,7 +190,7 @@ public class AdminResource {
 	           description = "Returns a list of inscriptions for the specified competition within the specified tournament")
 	public ResponseEntity<List<InscriptionResponseDTO>> getInscriptions(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
 
-		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+		Competition competition = tournamentService.getCompetitionByIdAndTournamentIdAdmin(competitionId, tournamentId);
 		List<InscriptionResponseDTO> response = competition.getInscriptions().stream()
 		                                                   .map(inscription -> modelMapper.map(inscription, InscriptionResponseDTO.class))
 		                                                   .collect(Collectors.toList());
