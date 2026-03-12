@@ -42,11 +42,26 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 	@Query("""
 		SELECT c
 		FROM Competition c
+		WHERE c.tournament.id = :tournamentId
+		""")
+	List<Competition> findAllCompetitionsByTournamentId(Long tournamentId);
+
+	@Query("""
+		SELECT c
+		FROM Competition c
 		JOIN Tournament t on c.tournament.id = t.id
 		WHERE c.id = :competitionId
 		AND t.id = :tournamentId
 		AND t.published = true
 		""")
 	Optional<Competition> findCompetitionByIdAndTournamentId(Long competitionId, Long tournamentId);
+
+	@Query("""
+		SELECT c
+		FROM Competition c
+		WHERE c.id = :competitionId
+		AND c.tournament.id = :tournamentId
+		""")
+	Optional<Competition> findCompetitionByIdAndTournamentIdAdmin(Long competitionId, Long tournamentId);
 
 }

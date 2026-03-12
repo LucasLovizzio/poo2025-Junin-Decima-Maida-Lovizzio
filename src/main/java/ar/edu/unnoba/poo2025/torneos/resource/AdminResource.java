@@ -106,7 +106,7 @@ public class AdminResource {
 	@Operation(summary = "Get all competitions for a tournament",
 	           description = "Returns all competitions within a specific tournament for admin management")
 	public ResponseEntity<List<CompetitionResponseDTO>> getCompetitionsByTournament(@PathVariable Long tournamentId) {
-		List<CompetitionResponseDTO> competitions = tournamentService.getCompetitionsByTournamentId(tournamentId).stream()
+		List<CompetitionResponseDTO> competitions = tournamentService.getAdminCompetitionsByTournamentId(tournamentId).stream()
 		                                                             .map(comp -> modelMapper.map(comp, CompetitionResponseDTO.class))
 		                                                             .collect(Collectors.toList());
 		return ResponseEntity.ok(competitions);
@@ -117,7 +117,7 @@ public class AdminResource {
 	           description = "Returns the details of a specific competition within a specific tournament")
 	public ResponseEntity<CompetitionResponseDTO> getTournamentCompetition(@PathVariable Long tournamentId, @PathVariable Long competitionId) {
 
-		Competition competition = tournamentService.getCompetitionByIdAndTournamentId(competitionId, tournamentId);
+		Competition competition = tournamentService.getCompetitionByIdAndTournamentIdAdmin(competitionId, tournamentId);
 		CompetitionResponseDTO response = modelMapper.map(competition, CompetitionResponseDTO.class);
 
 		return ResponseEntity.ok(response);

@@ -15,10 +15,14 @@ public interface TournamentService {
 
 	@Transactional(readOnly = true)
 	List<Tournament> getTournamentsOrderDesc();
-	List<Tournament> getPublishedAndNextTournamentsOrInProgress() throws TournamentNotFoundException;
+	List<Tournament> getPublishedAndNextTournamentsOrInProgress();
 	Tournament getTournamentById(Long id) throws TournamentNotFoundException;
-	List<Competition> getCompetitionsByTournamentId(Long tournamentId) throws TournamentNotFoundException;
+	List<Competition> getCompetitionsByTournamentId(Long tournamentId);
+	List<Competition> getAdminCompetitionsByTournamentId(Long tournamentId);
 	Competition getCompetitionByIdAndTournamentId(Long competitionId, Long tournamentId);
+	Competition getCompetitionByIdAndTournamentIdAdmin(Long competitionId, Long tournamentId);
+
+	List<Competition> getAdminCompetitionsByTournamentId(Long tournamentId);
 
 	void inscribeParticipantInCompetition(Participant p, Long tournamentId, Long competitionId);
 

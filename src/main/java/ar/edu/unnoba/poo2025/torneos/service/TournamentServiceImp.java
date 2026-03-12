@@ -53,12 +53,7 @@ public class TournamentServiceImp implements TournamentService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Tournament> getPublishedAndNextTournamentsOrInProgress() {
-		List<Tournament> tournaments = tournamentRepository.findPublishedAndNextTournamentsOrInProgress();
-		if (tournaments.isEmpty()) {
-			throw new TournamentNotFoundException("No se encontraron torneos publicados o en progreso.");
-		}
-
-		return tournaments;
+		return tournamentRepository.findPublishedAndNextTournamentsOrInProgress();
 	}
 
 	// Obtiene un torneo por ID
@@ -73,20 +68,23 @@ public class TournamentServiceImp implements TournamentService {
 	// Obtiene las competencias de un torneo por ID de torneo
 	@Override
 	@Transactional(readOnly = true)
-	public List<Competition> getCompetitionsByTournamentId(Long tournamentId) throws TournamentNotFoundException {
-		List<Competition> competitions = tournamentRepository.findCompetitionsByTournamentId(tournamentId);
-		if (competitions.isEmpty()) {
-			throw new TournamentNotFoundException("No se han podido encontrar competencias para el torneo.");
-		}
-
-		return competitions;
+	public List<Competition> getCompetitionsByTournamentId(Long tournamentId) {
+		return tournamentRepository.findCompetitionsByTournamentId(tournamentId);
 	}
 
-	// Obtiene una competencia por ID de competencia y ID de torneo
+	// Obtiene una competencia por ID de competencia y ID de torneo (solo torneos publicados, para participantes)
 	@Override
 	@Transactional(readOnly = true)
 	public Competition getCompetitionByIdAndTournamentId(Long competitionId, Long tournamentId) {
 		return tournamentRepository.findCompetitionByIdAndTournamentId(competitionId, tournamentId)
+		                           .orElseThrow(() -> new CompetitionNotFoundException("No se ha podido encontrar la competencia en el torneo."));
+	}
+
+	// Obtiene una competencia por ID de competencia y ID de torneo (sin filtro published, para admins)
+	@Override
+	@Transactional(readOnly = true)
+	public Competition getCompetitionByIdAndTournamentIdAdmin(Long competitionId, Long tournamentId) {
+		return tournamentRepository.findCompetitionByIdAndTournamentIdAdmin(competitionId, tournamentId)
 		                           .orElseThrow(() -> new CompetitionNotFoundException("No se ha podido encontrar la competencia en el torneo."));
 	}
 
@@ -143,7 +141,7 @@ public class TournamentServiceImp implements TournamentService {
 	public void removeCompetition(Long tournamentId, Long competitionId) {
 		Tournament tournament = tournamentRepository.findById(tournamentId)
 		                                            .orElseThrow(() -> new TournamentNotFoundException("No se ha podido encontrar el torneo."));
-		Competition competition = tournamentRepository.findCompetitionByIdAndTournamentId(competitionId, tournamentId)
+		Competition competition = tournamentRepository.findCompetitionByIdAndTournamentIdAdmin(competitionId, tournamentId)
 		                                              .orElseThrow(() -> new CompetitionNotFoundException("No se ha podido encontrar la competencia en el torneo."));
 
 		if (!tournament.getCompetitions().contains(competition)) {
@@ -191,9 +189,16 @@ public class TournamentServiceImp implements TournamentService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<Competition> getAdminCompetitionsByTournamentId(Long tournamentId) {
+		return tournamentRepository.findAllCompetitionsByTournamentId(tournamentId);
+	}
+
+	@Override
 	@Transactional
 	public Competition createCompetition(Long tournamentId, CompetitionRequestDTO competitionRequest) {
-		Tournament tournament = getTournamentById(tournamentId);
+		Tournament tournament = tournamentRepository.findById(tournamentId)
+		                                            .orElseThrow(() -> new TournamentNotFoundException("No se ha podido encontrar el torneo."));
 
 		if (competitionRequest.getCapacity() == null || competitionRequest.getCapacity() <= 0)
 			throw new IllegalArgumentException("La capacidad debe ser mayor que 0");
