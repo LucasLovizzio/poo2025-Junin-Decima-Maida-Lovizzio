@@ -32,4 +32,10 @@ public class InscriptionServiceImp implements InscriptionService {
 		                            .orElseThrow(() -> new CompetitionNotFoundException("No se encontró la inscripción."));
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public boolean hasInscriptionInTournament(Long participantId, Long tournamentId) {
+		return inscriptionRepository.existsByParticipantIdAndTournamentId(participantId, tournamentId);
+	}
+
 }

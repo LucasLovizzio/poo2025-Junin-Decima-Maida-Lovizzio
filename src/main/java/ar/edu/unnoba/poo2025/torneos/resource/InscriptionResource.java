@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,10 +51,29 @@ public class InscriptionResource {
 		List<InscriptionResponseDTO> inscriptions = inscriptionService
 			.getInscriptionsByParticipantId(participant.getId())
 			.stream()
-			.map(inscription -> modelMapper.map(inscription, InscriptionResponseDTO.class))
+			.map(inscription -> new InscriptionResponseDTO(
+				inscription.getId(),
+				inscription.getInscriptionDate(),
+				inscription.getFinalPrice(),
+				inscription.getCompetition().getTournament().getId(),
+				inscription.getCompetition().getTournament().getName(),
+				inscription.getCompetition().getId(),
+				inscription.getCompetition().getName()
+			))
 			.collect(Collectors.toList());
 
 		return ResponseEntity.ok(inscriptions);
+	}
+
+	@GetMapping("/tournament/{tournamentId}/check")
+	@Operation(summary = "Check if the authenticated participant has an inscription in a tournament")
+	public ResponseEntity<Map<String, Boolean>> hasInscriptionInTournament(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long tournamentId) {
+
+		Participant participant = (Participant) userDetails.getUser();
+		boolean hasInscription = inscriptionService.hasInscriptionInTournament(participant.getId(), tournamentId);
+		return ResponseEntity.ok(Map.of("hasInscription", hasInscription));
 	}
 
 	@GetMapping("/{id}")

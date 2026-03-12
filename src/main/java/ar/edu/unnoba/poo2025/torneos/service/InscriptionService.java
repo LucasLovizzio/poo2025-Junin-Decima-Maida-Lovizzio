@@ -10,4 +10,6 @@ public interface InscriptionService {
 
 	Inscription getInscriptionByIdAndParticipantId(Long inscriptionId, Long participantId);
 
+	boolean hasInscriptionInTournament(Long participantId, Long tournamentId);
+
 }
